@@ -1,0 +1,8 @@
+# Debug
+Debug/*
+
+# Cache
+*.aps
+*.ncb
+*.opensdf
+*.sdf
