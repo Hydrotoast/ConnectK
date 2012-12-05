@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "CKPlayer.h"
+#include "InvalidPlayerException.h"
 
 CKPlayer::CKPlayer(int player, BoardState board) :
 	player(player), board(board)
@@ -9,8 +10,7 @@ CKPlayer::CKPlayer(int player, BoardState board) :
 	else if (player == PLAYER_B)
 		playerMark = Mark::B;
 	else
-		;
-		// Invalid player
+		throw InvalidPlayerException();
 }
 
 void CKPlayer::updateBoard(Cell coord, Mark m) {

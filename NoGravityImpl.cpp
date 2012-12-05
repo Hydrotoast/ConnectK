@@ -8,6 +8,10 @@ NoGravityImpl::NoGravityImpl(BoardState& board) :
 	GravityImpl(board)
 {}
 
+NoGravityImpl* NoGravityImpl::clone(BoardState& board) const {
+	return new NoGravityImpl(board);
+}
+
 list<Cell> NoGravityImpl::getAvailable() {
 	list<Cell> available;
 	for (size_t row = 0; row < board.config().rows; ++row)

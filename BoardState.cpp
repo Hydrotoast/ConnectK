@@ -7,7 +7,7 @@
 
 using namespace std;
 
-BoardState::BoardState(BoardConfig& config) : 
+BoardState::BoardState(BoardConfig config) : 
 	config_(config), numOccupied_(0)
 {
 	board_ = new Mark[config.rows * config.cols];
@@ -26,6 +26,7 @@ BoardState::BoardState(const BoardState& board) :
 	config_(board.config_), numOccupied_(board.numOccupied_)
 {
 	this->board_ = new Mark[config_.rows * config_.cols];
+	this->gravity_ = board.gravity_->clone(*this);
 	for (size_t row = 0; row < config_.rows; ++row)
 		for (size_t col = 0; col < config_.cols; ++col)
 			this->board_[row * config_.cols + col] = Mark::BLANK;
@@ -34,16 +35,21 @@ BoardState::BoardState(const BoardState& board) :
 BoardState& BoardState::operator=(const BoardState& board) {
 	if (&board == this)
 		return *this;
+
+	delete board_;
+	delete gravity_;
+
 	this->config_ = board.config_;
 	this->numOccupied_ = board.numOccupied_;
 	this->board_ = new Mark[config_.rows * config_.cols];
+	this->gravity_ = board.gravity_->clone(*this);
 	for (size_t row = 0; row < config_.rows; ++row)
 		for (size_t col = 0; col < config_.cols; ++col)
 			this->board_[row * config_.cols + col] = Mark::BLANK;
 	return *this;
 }
 
-BoardConfig BoardState::config() const {
+const BoardConfig& BoardState::config() const {
 	return config_;
 }
 
@@ -74,6 +80,33 @@ bool BoardState::occupy(size_t row, size_t col, Mark m) {
 	numOccupied_++;
 	return gravity_->occupy(row, col, m);
 }
+
+//WinState BoardState::winningMove(size_t row, size_t col) {
+//	int ACnt = 0;
+//	int BCnt = 0;
+//
+//	// Horizontal wins
+//	for (size_t j = 0; j + config_.kLength< config_.cols; j++) {
+//		for (size_t k = j; k < config_.cols + config_.kLength; k++) {
+//			switch (board_[row * config_.cols + k]) {
+//				case Mark::A:
+//					ACnt++;
+//					break;
+//				case Mark::B:
+//					BCnt++;
+//					break;
+//				default:
+//					break;
+//			}
+//		}
+//		if (ACnt == config_.kLength)
+//			return WinState::A_WIN;
+//		else if (BCnt == config_.kLength)
+//			return WinState::B_WIN;
+//	}
+//
+//	return WinState::NO_WINNER;
+//}
 
 WinState BoardState::isEnd() {
 	int ACnt = 0;

@@ -14,13 +14,13 @@ enum WinState {
 
 class BoardState {
 public:
-	explicit BoardState(BoardConfig& config);
+	explicit BoardState(BoardConfig config);
 	~BoardState();
 	BoardState(const BoardState& board);
 	BoardState& operator=(const BoardState& board);
 	BoardState clone();
 
-	BoardConfig config() const;
+	const BoardConfig& config() const;
 	size_t numOccupied() const;
 
 	bool isOccupied(size_t row, size_t col);
@@ -30,12 +30,13 @@ public:
 
 	std::list<Cell> getAvailable();
 	bool occupy(size_t row, size_t col, Mark m);
-	
+	WinState winningMove(size_t row, size_t col, Mark m);
+
 	WinState isEnd();
 	bool isTie();
 	bool isWin();
 protected:
-	BoardConfig& config_;
+	BoardConfig config_;
 	size_t numOccupied_;
 
 	Mark* board_;

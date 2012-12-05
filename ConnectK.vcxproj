@@ -131,6 +131,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\ConnectAI\AIGravityImpl.cpp" />
+    <ClCompile Include="..\ConnectAI\AINoGravityImpl.cpp" />
+    <ClCompile Include="..\ConnectAI\BoardState.cpp" />
+    <ClCompile Include="..\ConnectAI\GravityImpl.cpp" />
+    <ClCompile Include="..\ConnectAI\Logger.cpp" />
+    <ClCompile Include="..\ConnectAI\NoGravityImpl.cpp" />
+    <ClCompile Include="..\ConnectAI\RuntimeState.cpp" />
     <ClCompile Include="BoardState.cpp" />
     <ClCompile Include="CKPlayer.cpp" />
     <ClCompile Include="Connect.cpp" />
@@ -157,6 +164,7 @@
     <ClInclude Include="GravityImpl.h" />
     <ClInclude Include="BoardConfig.h" />
     <ClInclude Include="BoardState.h" />
+    <ClInclude Include="InvalidPlayerException.h" />
     <ClInclude Include="Mark.h" />
     <ClInclude Include="Connect.h" />
     <ClInclude Include="ConnectDoc.h" />
