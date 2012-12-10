@@ -5,18 +5,19 @@ using namespace std;
 
 // constructor
 ConnectK::ConnectK()
-	: M(0), N(0), K(0), G(FALSE)
+	: M(0), N(0), K(0), G(FALSE),
+	CKPlayer(PLAYER_A, BoardState(BoardConfig()))
 {
-	board = 0;
+	board_ = 0;
 }
 
 // destructor
 ConnectK::~ConnectK()
 {
 	for ( int i = 0; i < M; i++ )
-		delete [] board[i];
+		delete [] board_[i];
 
-	delete [] board;
+	delete [] board_;
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -25,12 +26,12 @@ ConnectK::~ConnectK()
 // Purpose:		This function is to allocate memory and initialize structures necessary 
 //				to play the game defined by the parameters, M, N, K and G passed by the
 //				GUI (or other driving program to this class).  In this sample code, we are
-//				using a two dimensional dynamic array of characters to represent the board
+//				using a two dimensional dynamic array of characters to represent the board_
 //				and the symbols X, O, and BLANK (defined in the ConnectK.h file) to keep
 //				track of game progress.
 //
-//	Parameters:	pM		number of rows in the game board
-//				pN		number of columns in the game board
+//	Parameters:	pM		number of rows in the game board_
+//				pN		number of columns in the game board_
 //				pK		number in a row to win the game
 //				pG		Gravity on/off. Determines whether or not game pieces fall to the 
 //						lowest available position in a column (as in Connect 4), or remain
@@ -45,8 +46,8 @@ ConnectK::~ConnectK()
 // NOTE:		This function can be called at any time from the GUI.  Make sure it 
 //				can re-allocate memory and re-initialize variables, game after game.
 //
-//				The board layout used by the GUI has the origin located at the top left corner
-//				of the board.  For example:
+//				The board_ layout used by the GUI has the origin located at the top left corner
+//				of the board_.  For example:
 //
 //					N columns
 //
@@ -65,13 +66,13 @@ void ConnectK::newGame(int pM, int pN, int pK, bool pG, char pmark)
 {	
 	// re-initialize all variables
 
-	// delete the previous game board if it exists
-	if ( board != NULL )
+	// delete the previous game board_ if it exists
+	if ( board_ != NULL )
 	{
 		for ( int i = 0; i < M; i++ )
-			delete [] board[i];
-		board = 0;	
-		delete [] board;
+			delete [] board_[i];
+		board_ = 0;	
+		delete [] board_;
 	}
 
 	// p is for parameter
@@ -80,16 +81,25 @@ void ConnectK::newGame(int pM, int pN, int pK, bool pG, char pmark)
 	K = pK;
 	G = pG;
 	computerMark = pmark;
+	playerMark = (pmark == 'X') ? Mark::A : Mark::B;
+	player = (pmark == 'X') ? PLAYER_A : PLAYER_B;
 
-	// initialize the board to all blank characters (see ConnectK.h for definitions)
+	BoardConfig config;
+	config.rows = M;
+	config.cols = N;
+	config.kLength = K;
+	config.gravityFlag = G;
+
+	// initialize the board_ to all blank characters (see ConnectK.h for definitions)
 	if ( M > 0 && N > 0 )
 	{
-		board = new CharArray[M];
+		board_ = new CharArray[M];
+		board = BoardState(config);
 		for (int i = 0; i < M; i++)
 		{
-			board[i] = new char[N];
+			board_[i] = new char[N];
 			for (int j = 0; j < N; j++)
-				board[i][j] = BLANK;
+				board_[i][j] = BLANK;
 		}
 	}
 	else
@@ -119,13 +129,13 @@ void ConnectK::nextMove(int &row, int &col)
 	if( ( row != -1 ) && ( col != -1 ) )
 	{
 		if (computerMark == X)
-			board[row][col] = O;
+			board_[row][col] = O;
 		else
-			board[row][col] = X;
+			board_[row][col] = X;
 	}
 
 	// Now we need to have an AI routine to determine the next move to make.
-	// In this case, we are just looking for an empty square on the board,
+	// In this case, we are just looking for an empty square on the board_,
 	// and returning that move.  Hardly an effective AI routine!
 	// You will need many supporting functions to create an effective AI competitor.
 	// Call them from this routine, but remember that this function is the only interface
@@ -135,10 +145,10 @@ void ConnectK::nextMove(int &row, int &col)
 	{
 		for (int cols = 0; cols < N; cols++) // columns are left to right
 		{
-			if (board[rows][cols] == BLANK)
+			if (board_[rows][cols] == BLANK)
 			{
 				// record the move made by the AI
-				board[rows][cols] = computerMark;
+				board_[rows][cols] = computerMark;
 
 				// return the move made by the AI
 				row = rows;
@@ -147,4 +157,28 @@ void ConnectK::nextMove(int &row, int &col)
 			}
 		}
 	}
+}
+
+Cell ConnectK::getMove(unsigned int deadline) {
+	int row = 0;
+	int col = 0;
+	for (int rows = M - 1; rows >= 0; rows--) // we want to look for blank positions at the bottom of each column
+	{
+		for (int cols = 0; cols < N; cols++) // columns are left to right
+		{
+			if (board_[rows][cols] == BLANK)
+			{
+				// record the move made by the AI
+				board_[rows][cols] = computerMark;
+
+				// return the move made by the AI
+				row = rows;
+				col = cols;
+				updateBoard(Cell(row, col), playerMark);
+				return Cell(row, col);
+			}
+		}
+	}
+	updateBoard(Cell(0, 0), playerMark);
+	return Cell(0, 0);
 }
