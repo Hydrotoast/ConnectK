@@ -5,6 +5,7 @@
 #include "Mark.h"
 
 #include <list>
+#include <string>
 
 class GravityImpl;
 
@@ -22,6 +23,7 @@ public:
 
 	const BoardConfig& config() const;
 	size_t numOccupied() const;
+	WinState winState() const;
 
 	bool isOccupied(size_t row, size_t col);
 	bool inRange(size_t row, size_t col);
@@ -30,17 +32,18 @@ public:
 
 	std::list<Cell> getAvailable();
 	bool occupy(size_t row, size_t col, Mark m);
-	WinState winningMove(size_t row, size_t col, Mark m);
 
 	WinState isEnd();
 	bool isTie();
-	bool isWin();
+
+	size_t hash();
+	std::string toString();
 protected:
 	BoardConfig config_;
 	size_t numOccupied_;
+	WinState winState_;
 
 	Mark* board_;
-
 	GravityImpl* gravity_;
 };
 
